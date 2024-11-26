@@ -8,7 +8,16 @@ from faker import Faker
 
 # Local imports
 from app import app
-from models import db
+from models import db, Channel
+
+with app.app_context():
+    Channel.query.delete()
+    db.session.commit()
+    p1 = Channel(name="Welcome", description="Welcome to Fashion Social App")
+    db.session.add(p1)
+    db.session.commit() 
+
+
 
 if __name__ == '__main__':
     fake = Faker()
