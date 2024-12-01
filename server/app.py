@@ -15,20 +15,39 @@ from models import User, Channel, Post, Comment
 # Views go here!
 # Resources
 class ChannelResource(Resource):
-    def get(self):
-        channels = Channel.query.all()
-        all_channels = [
-            {
-                "id": channel.id,
-                "title": channel.title,
-                "description": channel.description,
-                "created_at": channel.created_at,
-                "posts": [{"id": post.id, "title": post.title} for post in channel.posts],
-                "users": [{"username": user.user.username} for user in channel.users]
-            }
-            for channel in channels
-        ]
-        return make_response(all_channels, 200)
+    def get(self, channel_id=None):
+        if channel_id is None:
+            channels = Channel.query.all()
+            all_channels = [
+                {
+                    "id": channel.id,
+                    "title": channel.title,
+                    "description": channel.description,
+                    "created_at": channel.created_at,
+                    "posts": [{"id": post.id, "title": post.title} for post in channel.posts],
+                    "users": [{"username": user.user.username} for user in channel.users]
+                }
+                for channel in channels
+            ]
+            return make_response(all_channels, 200)
+        
+        # Fetch a single channel with its posts
+        channel = Channel.query.get_or_404(channel_id)
+        channel_data = {
+            "id": channel.id,
+            "title": channel.title,
+            "description": channel.description,
+            "posts": [
+                {
+                    "id": post.id,
+                    "title": post.title,
+                    "content": post.content,
+                    "comments": [{"id": comment.id, "content": comment.content} for comment in post.comments]
+                }
+                for post in channel.posts
+            ]
+        }
+        return make_response(channel_data, 200)
 
     def post(self):
         data = request.get_json()
@@ -108,7 +127,7 @@ class CommentResource(Resource):
 
 
 # API Routes
-api.add_resource(ChannelResource, '/channels')
+api.add_resource(ChannelResource, '/channels', '/channels/<int:channel_id>')
 api.add_resource(PostResource, '/posts/<int:user_id>', '/posts')
 api.add_resource(CommentResource, '/comments/<int:user_id>', '/comments', '/comments/<int:comment_id>')
 
