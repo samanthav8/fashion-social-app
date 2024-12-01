@@ -48,7 +48,7 @@ const Navbar = () => {
                   color: "#555",
                   marginRight: "1rem",
                 }}
-                activeStyle={{ color: "#000", textDecoration: "underline" }}
+                activestyle={{ color: "#000", textDecoration: "underline" }}
               >
                 Home
               </NavLink>
@@ -63,7 +63,7 @@ const Navbar = () => {
                   color: "#555",
                   marginRight: "1rem",
                 }}
-                activeStyle={{ color: "#000", textDecoration: "underline" }}
+                activestyle={{ color: "#000", textDecoration: "underline" }}
               >
                 Channels
               </NavLink>
@@ -77,7 +77,7 @@ const Navbar = () => {
                   fontSize: "1rem",
                   color: "#555",
                 }}
-                activeStyle={{ color: "#000", textDecoration: "underline" }}
+                activestyle={{ color: "#000", textDecoration: "underline" }}
               >
                 Profile
               </NavLink>

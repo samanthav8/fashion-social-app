@@ -3,32 +3,31 @@ import Home from "./Home";
 import Channel from "./Channel";
 import ChannelList from "./ChannelList";
 import Post from "./Post";
-import Profile from "./Profile"; // If used
-
+import Profile from "./Profile";
 
 const routes = [
     {
         path: "/",
-        element: <App />,
+        element: <App />, // Main app component
         children: [
             {
-                path: "/",
+                path: "/", // Home route
                 element: <Home />,
             },
             {
-                path: "/channels",
+                path: "channels", // Channel list route
                 element: <ChannelList />,
             },
             {
-                path: "/channels/:id",
+                path: "channels/:id", // Individual channel route
                 element: <Channel />,
             },
             {
-                path: "/post",
+                path: "post", // Post route
                 element: <Post />,
             },
             {
-                path: "/profile",
+                path: "profile", // Profile route
                 element: <Profile />,
             },
         ],

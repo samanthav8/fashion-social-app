@@ -1,24 +1,23 @@
-import React from "react";
-import { Switch, Route } from "react-router-dom";
-import Navbar from "./Navbar";
-import Home from "./Home";
-import ChannelList from "./ChannelList";
-import Channel from "./Channel";
-import Post from "./Post";
-import Profile from "./Profile";
+import React, {useEffect, useState} from "react";
+import { Outlet } from "react-router-dom";
+import Navbar from "./Navbar"
+
 
 const App = () => {
-  return (
-    <div>
-      <Navbar />
-      <Switch>
-        <Route exact path="/" component={Home} />
-        <Route exact path="/channels" component={ChannelList} />
-        <Route path="/channels/:id" component={Channel} />
-        <Route path="/profile" component={Profile} />
-      </Switch>
-    </div>
-  );
+    const [channels, setChannels] = useState([])
+
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/channels")
+        .then(response => response.json())
+        .then(data => setChannels(data))
+    }, [])
+    
+    return (
+        <div>
+            <Navbar />
+            <Outlet context={{channels}}/> 
+        </div>
+    );
 };
 
 export default App;
