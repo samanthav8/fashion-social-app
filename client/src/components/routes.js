@@ -8,30 +8,30 @@ import Profile from "./Profile";
 const routes = [
     {
         path: "/",
-        element: <App />, // Main app component
+        element: <App />, // Main App component with Navbar and Outlet
         children: [
             {
                 path: "/", // Home route
-                element: <Home />,
+                element: <Home />, // Your Home component
             },
             {
-                path: "channels", // Channel list route
+                path: "channels",
                 element: <ChannelList />,
             },
             {
-                path: "channels/:id", // Individual channel route
+                path: "channels/:id",
                 element: <Channel />,
             },
             {
-                path: "post", // Post route
+                path: "post/:id",
                 element: <Post />,
             },
             {
-                path: "profile", // Profile route
+                path: "profile",
                 element: <Profile />,
             },
         ],
     },
 ];
-
 export default routes;
+

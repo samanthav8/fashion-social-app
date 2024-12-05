@@ -61,30 +61,45 @@ class ChannelResource(Resource):
 
 
 class PostResource(Resource):
-    def get(self, user_id):
-        posts = Post.query.filter_by(user_id=user_id).all()
-        user_posts = [
+    def get(self, channel_id=None):
+        if channel_id is not None:
+            posts = Post.query.filter_by(channel_id=channel_id).all()
+            channel_posts = [
+                {
+                    "id": post.id,
+                    "title": post.title,
+                    "content": post.content,
+                    "channel_id": post.channel_id,
+                    "comment_count": len(post.comments)  # Add comment count
+                }
+                for post in posts
+            ]
+            return make_response(channel_posts, 200)
+
+        posts = Post.query.all()
+        all_posts = [
             {
                 "id": post.id,
                 "title": post.title,
                 "content": post.content,
-                "channel_id": post.channel_id
+                "channel_id": post.channel_id,
+                "comment_count": len(post.comments)
             }
             for post in posts
         ]
-        return make_response(user_posts, 200)
+        return make_response(all_posts, 200)
 
-    def post(self):
-        data = request.get_json()
-        new_post = Post(
-            title=data["title"],
-            content=data["content"],
-            user_id=data["user_id"],
-            channel_id=data["channel_id"]
-        )
-        db.session.add(new_post)
-        db.session.commit()
-        return make_response(new_post.to_dict(), 201)
+class SinglePostResource(Resource):
+    def get(self, post_id):
+        post = Post.query.get_or_404(post_id)
+        post_data = {
+            "id": post.id,
+            "title": post.title,
+            "content": post.content,
+            "comments": [{"id": comment.id, "content": comment.content} for comment in post.comments]
+        }
+        return make_response(post_data, 200)
+
 
 
 class CommentResource(Resource):
@@ -128,8 +143,10 @@ class CommentResource(Resource):
 
 # API Routes
 api.add_resource(ChannelResource, '/channels', '/channels/<int:channel_id>')
-api.add_resource(PostResource, '/posts/<int:user_id>', '/posts')
+api.add_resource(PostResource, '/posts', '/posts/channel/<int:channel_id>') 
+api.add_resource(SinglePostResource, '/posts/<int:post_id>')
 api.add_resource(CommentResource, '/comments/<int:user_id>', '/comments', '/comments/<int:comment_id>')
+
 
 # Base route
 @app.route('/')
