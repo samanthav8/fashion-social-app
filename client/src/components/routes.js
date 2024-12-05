@@ -8,11 +8,11 @@ import Profile from "./Profile";
 const routes = [
     {
         path: "/",
-        element: <App />, // Main App component with Navbar and Outlet
+        element: <App />, 
         children: [
             {
-                path: "/", // Home route
-                element: <Home />, // Your Home component
+                path: "/", 
+                element: <Home />, 
             },
             {
                 path: "channels",
@@ -23,7 +23,7 @@ const routes = [
                 element: <Channel />,
             },
             {
-                path: "post/:id",
+                path: "post/:id", 
                 element: <Post />,
             },
             {
@@ -33,5 +33,5 @@ const routes = [
         ],
     },
 ];
-export default routes;
 
+export default routes;

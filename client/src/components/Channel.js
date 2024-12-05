@@ -1,11 +1,10 @@
 import React from "react";
-import { useParams, useOutletContext } from "react-router-dom";
+import { useParams, useOutletContext, Link } from "react-router-dom";
 
 const Channel = () => {
-    const { id } = useParams(); // Get channel ID from the URL
-    const { channels } = useOutletContext(); // Access channels from context
+    const { id } = useParams(); 
+    const { channels } = useOutletContext(); 
 
-    // Find the specific channel by ID
     const channel = channels.find((channel) => channel.id === parseInt(id));
 
     if (!channel) {
@@ -16,8 +15,24 @@ const Channel = () => {
         <div>
             <h1>{channel.title}</h1>
             <p>{channel.description}</p>
+            <h2>Posts</h2>
+            {channel.posts && channel.posts.length > 0 ? ( 
+                <ul>
+                    {channel.posts.map((post) => (
+                        <li key={post.id}>
+                            <h3>{post.title}</h3>
+                            <Link to={`/post/${post.id}`}>
+                                <button>View Post</button>
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>No posts available for this channel.</p>
+            )}
         </div>
     );
 };
 
 export default Channel;
+

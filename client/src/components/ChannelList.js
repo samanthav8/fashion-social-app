@@ -2,9 +2,8 @@ import React from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
 
 const ChannelList = () => {
-    const { channels } = useOutletContext(); // Access the channels data from context
-    const navigate = useNavigate(); // For navigation to specific channel
-
+    const { channels } = useOutletContext(); 
+    const navigate = useNavigate(); 
     if (!channels || channels.length === 0) {
         return <p>Loading channels...</p>;
     }

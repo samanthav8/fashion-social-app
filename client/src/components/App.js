@@ -4,14 +4,12 @@ import Navbar from "./Navbar";
 
 const App = () => {
     const [channels, setChannels] = useState([]);
-    const [posts, setPosts] = useState([]);
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/channels")
             .then((response) => response.json())
             .then((data) => setChannels(data));
     }, []);
-
 
     return (
         <div>
