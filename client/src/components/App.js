@@ -14,7 +14,7 @@ const App = () => {
     return (
         <div>
             <Navbar />
-            <Outlet context={{ channels }} />
+            <Outlet context={{ channels, setChannels }} />
         </div>
     );
 };

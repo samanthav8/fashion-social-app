@@ -96,10 +96,17 @@ class SinglePostResource(Resource):
             "id": post.id,
             "title": post.title,
             "content": post.content,
-            "comments": [{"id": comment.id, "content": comment.content} for comment in post.comments]
+            "username": post.user.username,  # Include the user's username for the post
+            "comments": [
+                {
+                    "id": comment.id,
+                    "content": comment.content,
+                    "username": comment.user.username  # Include the author's username for the comment
+                }
+                for comment in post.comments
+            ]
         }
         return make_response(post_data, 200)
-
 
 
 class CommentResource(Resource):
