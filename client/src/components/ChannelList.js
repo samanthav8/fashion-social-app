@@ -1,90 +1,106 @@
 import React, { useState } from "react";
-import { useOutletContext, useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 const ChannelList = () => {
-    const { channels, setChannels } = useOutletContext(); 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { channels = [], setChannels } = useOutletContext();
 
-    const [showForm, setShowForm] = useState(false); 
-    const [newChannel, setNewChannel] = useState({ title: "", description: "" }); 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewChannel((prev) => ({ ...prev, [name]: value }));
-    };
+  // use state to toggle the form visibility
+  const [isFormVisible, setIsFormVisible] = useState(false);
 
-    const handleCreateChannel = (e) => {
-        e.preventDefault();
-        fetch("/channels", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newChannel),
-        })
-            .then((response) => response.json())
-            .then((createdChannel) => {
-                setChannels((prev) => [...prev, createdChannel]);
-                setNewChannel({ title: "", description: "" }); 
-                setShowForm(false); 
-            })
-            .catch((error) => console.error("Error creating channel:", error));
-    };
+  // form validation schema with yup
+  const validationSchema = Yup.object({
+    name: Yup.string()
+      .max(50, "Channel name must be 50 characters or less")
+      .required("Channel name is required"),
+    description: Yup.string()
+      .max(200, "Description must be 200 characters or less")
+      .required("Description is required"),
+  });
 
-    if (!channels || channels.length === 0) {
-        return <p>Loading channels...</p>;
-    }
+  // formik initialize
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      description: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values, { resetForm }) => {
+      // add new channel and reset my form
+      const newChannel = { id: Date.now(), ...values };
+      setChannels((prevChannels) => [...prevChannels, newChannel]);
 
-    return (
-        <div>
-            <h1>Channels</h1>
+      resetForm();
+      setIsFormVisible(false); 
+    },
+  });
 
-            <div style={{ marginBottom: "20px" }}>
-                <button onClick={() => setShowForm((prev) => !prev)}>
-                    {showForm ? "Cancel" : "Create New Channel"}
-                </button>
+  return (
+    <div>
+      <h2>Channel List</h2>
 
-                {showForm && (
-                    <form onSubmit={handleCreateChannel} style={{ marginTop: "10px" }}>
-                        <label>
-                            Title:
-                            <input
-                                type="text"
-                                name="title"
-                                value={newChannel.title}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </label>
-                        <br />
-                        <label>
-                            Description:
-                            <textarea
-                                name="description"
-                                value={newChannel.description}
-                                onChange={handleInputChange}
-                            />
-                        </label>
-                        <br />
-                        <button type="submit">Submit</button>
-                    </form>
-                )}
-            </div>
+      {/* button to toggle form*/}
+      <button onClick={() => setIsFormVisible((prev) => !prev)}>
+        {isFormVisible ? "Cancel" : "Add Channel"}
+      </button>
 
-            <ul>
-                {channels.map((channel) => (
-                    <li key={channel.id}>
-                        <h2>{channel.title}</h2>
-                        <p>{channel.description}</p>
-                        <button
-                            onClick={() =>
-                                navigate(`/channels/${channel.id}`, { state: channel })
-                            }
-                        >
-                            View Channel
-                        </button>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
+      {/* my form */}
+      {isFormVisible && (
+        <form onSubmit={formik.handleSubmit}>
+          <div>
+            <label htmlFor="name">Channel Name:</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.name}
+            />
+            {formik.touched.name && formik.errors.name ? (
+              <div style={{ color: "red" }}>{formik.errors.name}</div>
+            ) : null}
+          </div>
+          <div>
+            <label htmlFor="description">Description:</label>
+            <textarea
+              id="description"
+              name="description"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.description}
+            />
+            {formik.touched.description && formik.errors.description ? (
+              <div style={{ color: "red" }}>{formik.errors.description}</div>
+            ) : null}
+          </div>
+          <button type="submit">Create Channel</button>
+        </form>
+      )}
+    {/* mapping through my channels*/}
+      <ul>
+        {channels.length > 0 ? (
+          channels.map((channel) => (
+            <li key={channel.id}>
+              <h2>{channel.title || channel.name}</h2>
+              <p>{channel.description}</p>
+              <button
+                onClick={() =>
+                  navigate(`/channels/${channel.id}`, { state: channel })
+                }
+              >
+                View Channel
+              </button>
+            </li>
+          ))
+        ) : (
+          <p>No channels available</p>
+        )}
+      </ul>
+    </div>
+  );
 };
 
 export default ChannelList;
